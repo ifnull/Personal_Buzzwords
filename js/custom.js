@@ -23,7 +23,7 @@ function generate () {
 
         wordType  = wordTypes[i];
         wordCount = words[wordType].length;
-        rand      = Math.round(Math.random() * (wordCount - 0));
+        rand      = Math.round(Math.random() * (wordCount - 1));
         phrase    = phrase + words[wordType][rand] + " ";
     }
 
