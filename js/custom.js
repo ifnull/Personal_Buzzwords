@@ -15,7 +15,7 @@ function updatePhraseUi(phrase){
 }
 
 function generate () {
-    var phrase, wordType;
+    var phrase, wordType, wordCount, rand;
 
     phrase = "";
 
@@ -27,14 +27,20 @@ function generate () {
         phrase    = phrase + words[wordType][rand] + " ";
     }
 
-    phrase = $.trim(phrase)+'.';
+    phrase = $.trim(phrase) + '.';
 
     return phrase;
 }
 
 function init(){
+    var wordType;
+
     $generateBtn = $('.jumbotron #generate');
     $lead        = $(".jumbotron .lead");
+
+    function success(response) {
+        words[wordType] = response.data;
+    }
 
     $generateBtn.on('click', function(e) {
         e.preventDefault();
@@ -43,19 +49,17 @@ function init(){
 
     // load data
     for (var i in wordTypes) {
-        var wordType = wordTypes[i];
+        wordType = wordTypes[i];
 
         $.ajax({
             dataType: "json",
-            url: "data/"+wordType+".json",
-            async: false,
-            success: function(response) {
-                words[wordType] = response.data ;
-            }
+            url     : "data/" + wordType + ".json",
+            async   : false,
+            success: success
         });
     }
 
-    // generate();
+    // initial word generation
     updatePhraseUi(generate());
 }
 
