@@ -1,44 +1,68 @@
-var phrase = "";
-var words = {};
-var wordTypes = [
-     'adverbs'
-    ,'verbs'
-    ,'adjectives'
-    ,'nouns'
+(function(window, document, $){
+
+var words, wordTypes, $generateBtn, $lead;
+
+words = {};
+wordTypes = [
+    'adverbs',
+    'verbs',
+    'adjectives',
+    'nouns'
 ]; // Order matters
 
-$(function() {
+function updatePhraseUi(phrase){
+    $lead.html(phrase);
+}
 
-    $( "div.jumbotron a#generate" ).click(function() {
-        event.stopPropagation();
-        generate();
-    });
+function generate () {
+    var phrase, wordType;
+
+    phrase = "";
 
     for (var i in wordTypes) {
+
+        wordType  = wordTypes[i];
+        wordCount = words[wordType].length;
+        rand      = Math.round(Math.random() * (wordCount - 0));
+        phrase    = phrase + words[wordType][rand] + " ";
+    }
+
+    phrase = $.trim(phrase)+'.';
+
+    return phrase;
+}
+
+function init(){
+    $generateBtn = $('.jumbotron #generate');
+    $lead        = $(".jumbotron .lead");
+
+    $generateBtn.on('click', function(e) {
+        e.preventDefault();
+        updatePhraseUi(generate());
+    });
+
+    // load data
+    for (var i in wordTypes) {
         var wordType = wordTypes[i];
+
         $.ajax({
             dataType: "json",
             url: "data/"+wordType+".json",
             async: false,
-            success: function( r ) {
-                words[wordType] = r.data ;
+            success: function(response) {
+                words[wordType] = response.data ;
             }
         });
     }
 
-    generate();
+    // generate();
+    updatePhraseUi(generate());
+}
 
+// DOM Ready
+$(function() {
+    init();
 });
 
-function generate () {
-    phrase = "";
-    for (var i in wordTypes) {
-        var wordType = wordTypes[i];
-        wordCount = words[wordType].length;
-        rand = Math.round( Math.random() * (wordCount - 0) );
-        phrase = phrase + words[wordType][rand] + " ";
-    }
-    phrase = $.trim(phrase)+'.';
-    $( "div.jumbotron p.lead" ).html(phrase);
-    return phrase;
-}
+}(window, document, window.jQuery));
+
